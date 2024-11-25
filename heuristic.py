@@ -1,6 +1,6 @@
-class hamming_distance:
+class hammingDistance:
 
 
 
 
-class manhattan_distance:
+class manhattanDistance:
