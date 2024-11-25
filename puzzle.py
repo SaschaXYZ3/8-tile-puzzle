@@ -1,6 +1,6 @@
 import random
 
-class puzzle:
+class Puzzle:
     # define goalstate
     goalState = [[0, 1, 2],
                  [3, 4, 5],
@@ -60,14 +60,14 @@ class puzzle:
 
     def isGoalReached(self):
         """Check if the current gameboard matches the goal state."""
-        return self.gameBoard == puzzle.goalState
+        return self.gameBoard == Puzzle.goalState
     
     def getMisplacedTilesCost(self):
         """Calculate the cost based on the number of misplaced tiles."""
         cost = 0
         for i in range(3):
             for j in range(3):
-                if self.gameBoard[i][j] != 0 and self.gameBoard[i][j] != puzzle.goalState[i][j]:
+                if self.gameBoard[i][j] != 0 and self.gameBoard[i][j] != Puzzle.goalState[i][j]:
                     cost += 1
         return cost
 

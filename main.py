@@ -1,8 +1,8 @@
-from puzzle import puzzle
+from Puzzle import Puzzle
 
 def main():
     # Generate a new puzzle
-    myPuzzle = puzzle()  
+    myPuzzle = Puzzle()  
     
     # Drucke das generierte Spielfeld
     print("Generiertes Spielfeld:")
