@@ -1,4 +1,6 @@
+import heapq
 import random
+import _heapq
 
 class Puzzle:
     # define goalstate
@@ -6,30 +8,26 @@ class Puzzle:
                  [3, 4, 5],
                  [6, 7, 8]]  # 0 is blank tile on top left
 
-    def __init__(self, gameBoard=None):
+    def __init__(self, gameBoard=None):  #Constructor that initializes the puzzle
         """Initialize the puzzle with a gameboard. If no gameboard is provided, create one."""
         self.gameBoard = gameBoard
-        if self.gameBoard is None:
-            self.createRandomGameBoard()
+        if self.gameBoard is None:         # when no gameBoard is provided = NONE
+            self.createRandomGameBoard()   # then create a random gameBoard
 
     def createRandomGameBoard(self):
         """Create a random gameboard that is solvable."""
-        # Creating 3x3 array for the gameboard
-        self.gameBoard = [[0] * 3 for _ in range(3)]
+        self.gameBoard = [[0] * 3 for _ in range(3)]   # Creating 3x3 array for the gameboard
         # Shuffle numbers until solvable
         isSolvable = False
 
         while not isSolvable:
-
             self.numbers = [1,2,3,4,5,6,7,0,8]
-            random.shuffle(self.numbers)
+            random.shuffle(self.numbers)       # shuffle random numbers
             for i in range(3):
                 for j in range(3):
-                    # Pop first number from shuffled list and assign it to gameboard
-                    self.gameBoard[i][j] = self.numbers.pop(0)
+                    self.gameBoard[i][j] = self.numbers.pop(0)  # Pop first number from shuffled list and assign it to gameboard
 
-            # Check if puzzle is solvable
-            isSolvable = self.isSolvable()
+            isSolvable = self.isSolvable()   # Check if puzzle is solvable
 
     def printGameBoard(self):
         """Print the current state of the gameboard in a readable format."""
@@ -38,7 +36,7 @@ class Puzzle:
  
     def isSolvable(self):
         """Check if the puzzle is solvable based on the number of inversions."""
-        inversions = 0
+        inversions = 0    # count the inversions: bigger number comes before little number
         flattenedPuzzle = []
         for row in self.gameBoard:  # Loop through each row in the gameboard
             for tile in row:  # Loop through each tile in the row
@@ -130,3 +128,38 @@ class Puzzle:
             possibleGameBoards.append(newGameBoard)
 
         return possibleGameBoards
+
+# A* Algorithm number of nodes expanded
+def a_star(puzzle, heuristic):
+    open_list = []            # Priority Queue for the minimum f(n)-value
+    closed_list = set()       # for expanded nodes
+    heapq.heappush(open_list, (0, puzzle.gameBoard, 0))   # f_cost, board, g_cost
+    nodes_expanded = 0        # count for expanded nodes
+
+    while open_list:    # take the node with the minimum f_cost
+        f_cost, current_board, g_cost = heapq.heappop(open_list)
+        current_puzzle = Puzzle(current_board)
+
+        if current_puzzle.isGoalReached(): # check if goal is reached
+             return {
+                "path_cost": g_cost,
+                "nodes_expanded": nodes_expanded,
+                "solution": current_board,
+            }
+         # add actuall state to closed_list
+        closed_list.add(tuple(map(tuple,current_board)))
+
+        # generate neighbors and check
+        for neighbor in current_puzzle.generatePossibleMoves():
+            neighbor_tuple = tuple(map(tuple,neighbor))
+            if neighbor_tuple in closed_list:
+                continue    # continue already achieved states
+
+            # calculate g,h and f for neighbor
+            g_neighbor = g_cost + 1         # every movement costs 1
+            h_neighbor = heuristic(Puzzle(neighbor))
+            f_neighbor = g_neighbor + h_neighbor
+
+            # put neighbours into the open_list
+            heapq.heappush(open_list, (f_neighbor, neighbor, g_neighbor))
+            nodes_expanded += 1

@@ -59,3 +59,35 @@ KPIs in der Konsole ausgeben.
    - **`copyGameBoard`**: Erstellt eine Kopie des aktuellen Spielfelds.
    - **`getEmptyPosition`**: Findet die Position des leeren Felds (0).
    - **`generatePossibleMoves`**: Generiert alle möglichen Spielfeldkonfigurationen, die durch Verschieben des leeren Felds entstehen können.
+
+
+
+**A_star-Algorithmus Implementierung:**
+--> Prioritätswarteschlange wird verwendet, um effizient den besten Knoten zu finden
+f(n) = g(n) + h(n)
+g(n): Kosten des Pfades vom Startknoten n (Anzahl der Movements)
+h(n): Heuristik (Schätzung der verbleibenden Kosten zum Ziel)
+
+ 1. **Offene Liste (`open_list`)**
+   - Alle Knoten gespeichert, die noch nicht expandiert wurden
+   - Priority Queue wählt die Knoten mit dem minimum f(n)-Wert
+ 2. **Geschlossene Liste (`closed_list`)**
+   - Verhindert, dass Knoten mehrfach bearbeitet werden, was Speicher und Zeit spart.
+3. **Loop**:
+   - Solange es offene Knoten gibt:
+   - Nimm den besten Knoten f(n)-Wert) aus der offenen Liste. 
+   - Prüfe, ob es der Zielzustand ist. 
+   - Erweitere die Nachbarn und berechne g(n), h(n), und f(n).
+4. **Rückgabe:**
+   - Die Pfadkosten (g(n)), die Anzahl der expandierten Knoten, und der Zielzustand werden zurückgegeben.
+
+
+Was zu tun ist:
+
+100 zufällige Startzustände testen. ✅
+
+Laufzeit und Speicherverbrauch messen. ✅
+
+Mittelwert und Standardabweichung berechnen. ✅
+
+Ergebnisse vergleichen (Misplaced Tiles vs. Manhattan Distance). ✅
