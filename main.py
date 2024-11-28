@@ -1,4 +1,6 @@
-from puzzle import Puzzle, a_star
+from Puzzle import Puzzle, a_star
+from Heuristic import ManhattanDistance
+from Heuristic import HammingDistance
 
 def main():
     # Generate a new puzzle
@@ -18,6 +20,22 @@ def main():
     print("\nMisplaced Tiles Cost (Hamming):", myPuzzle.getMisplacedTilesCost())
     print("Manhattan Distance Cost:", myPuzzle.getManhattanCost())
     print("\nErreichtes Zielzustand?", myPuzzle.isGoalReached())
+
+    manhattenHeuristic1 = ManhattanDistance(myPuzzle.goalState, costExponent=1)
+    hammingHeuristic1= HammingDistance(myPuzzle.goalState, costExponent=1)
+    manhattenHeuristic11= ManhattanDistance(myPuzzle.goalState, costExponent=11)
+    hammingHeuristic11= HammingDistance(myPuzzle.goalState, costExponent=11)
+
+    print("Manhattan Distance (Exponent 1):",
+          manhattenHeuristic1.calculate(myPuzzle.gameBoard, parentCost=0))
+    print("Hamming Distance (Exponent 1):",
+          hammingHeuristic1.calculate(myPuzzle.gameBoard, parentCost=0))
+    print("Manhattan Distance (Exponent 11):",
+          manhattenHeuristic11.calculate(myPuzzle.gameBoard, parentCost=0))
+    print("Hamming Distance (Exponent 11):",
+          hammingHeuristic11.calculate(myPuzzle.gameBoard, parentCost=0))
+    
+    
 
 # test A* Algorithm with one heuristic
     result = a_star(myPuzzle, Puzzle.getManhattanCost)
