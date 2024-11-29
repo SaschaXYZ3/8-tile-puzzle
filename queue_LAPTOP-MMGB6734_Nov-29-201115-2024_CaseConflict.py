@@ -1,7 +1,7 @@
 import heapq
 import time
 import sys
-from Puzzle import Puzzle
+from puzzle import Puzzle
 
 # A* Algorithm number of nodes expanded
 def a_star(puzzle, heuristic):
