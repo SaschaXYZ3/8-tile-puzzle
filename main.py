@@ -1,6 +1,7 @@
-from Puzzle import Puzzle, a_star
-from Heuristic import ManhattanDistance
-from Heuristic import HammingDistance
+from puzzle import Puzzle
+from heuristic import ManhattanDistance
+from heuristic import HammingDistance
+from queue import a_star
 
 def main():
     # Generate a new puzzle
@@ -42,6 +43,7 @@ def main():
     print("Pfadkosten:", result["path_cost"])
     print("Expandierte Knoten:", result["nodes_expanded"])
     print("Lösung gefunden:", result["solution"])
+    print("Laufzeit:", result["runtime"])
 
 
 if __name__ == "__main__":

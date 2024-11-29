@@ -80,14 +80,3 @@ h(n): Heuristik (Schätzung der verbleibenden Kosten zum Ziel)
    - Erweitere die Nachbarn und berechne g(n), h(n), und f(n).
 4. **Rückgabe:**
    - Die Pfadkosten (g(n)), die Anzahl der expandierten Knoten, und der Zielzustand werden zurückgegeben.
-
-
-Was zu tun ist:
-
-100 zufällige Startzustände testen. ✅
-
-Laufzeit und Speicherverbrauch messen. ✅
-
-Mittelwert und Standardabweichung berechnen. ✅
-
-Ergebnisse vergleichen (Misplaced Tiles vs. Manhattan Distance). ✅
