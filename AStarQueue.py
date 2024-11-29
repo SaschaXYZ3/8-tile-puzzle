@@ -1,34 +1,33 @@
-import heapq
-import time
-import sys
-from Puzzle import Puzzle
 from Nodes import Nodes
 
-class Queue:
+
+# Umbenennung der Klasse in AStarQueue, um Konflikte zu vermeiden
+class AStarQueue:
+
     def __init__(self, heuristicClass):
-        # Initialize the Queue with required attributes
-        self.nodes = {}  # Dictionary to store nodes by their ID
-        self.nextNodeId = 0  # ID to assign to the next node
-        self.openNodes = {}  # Nodes that are yet to be explored
-        self.path = []  # The solution path as a list of node IDs
-        self.numberOfMoves = 0  # Total moves to solve the puzzle
-        self.heuristicClass = heuristicClass  # Heuristic for the puzzle
+        # Initialisiere die Queue mit den notwendigen Attributen
+        self.nodes = {}  # Wörterbuch zum Speichern von Knoten nach deren ID
+        self.nextNodeId = 0  # ID für den nächsten Knoten
+        self.openNodes = {}  # Knoten, die noch untersucht werden müssen
+        self.path = []  # Der Lösungspfad als Liste von Knoten-IDs
+        self.numberOfMoves = 0  # Anzahl der Schritte zur Lösung des Puzzles
+        self.heuristicClass = heuristicClass  # Heuristik für das Puzzle
 
     def reset(self):
-        # Reset the Queue to its initial state
+        # Setze die Queue in ihren Ausgangszustand zurück
         self.nodes = {}
         self.nextNodeId = 0
         self.openNodes = {}
         self.path = []
 
     def setFirstNode(self):
-        # Create the first node and mark it as open
+        # Erstelle den ersten Knoten und markiere ihn als offen
         self.nodes[self.nextNodeId] = Nodes(self.nextNodeId, None, self.heuristicClass, 0)
         self.openNodes[self.nextNodeId] = self.nodes[self.nextNodeId]
         self.nextNodeId += 1
 
     def findCheapestNode(self):
-        # Find the node with the lowest cost in openNodes
+        # Finde den Knoten mit den niedrigsten Kosten in openNodes
         cheapestNode = None
         cheapestNodeId = None
         for nodeId, node in self.openNodes.items():
@@ -38,39 +37,42 @@ class Queue:
         return cheapestNodeId
 
     def addNode(self, parentId, gameBoard):
-        # Add a new node to the tree and mark it as open
-        self.nodes[self.nextNodeId] = Nodes(self.nextNodeId, parentId, self.heuristicClass, self.nodes[parentId].cost, gameBoard)
-        self.nodes[parentId].addChild(self.nextNodeId)
-        self.openNodes[self.nextNodeId] = self.nodes[self.nextNodeId]
+        # Füge einen neuen Knoten zum Baum hinzu und markiere ihn als offen
+        parentNode = self.nodes[parentId]
+        # Die Kosten vom Startknoten zu diesem neuen Knoten sind die Kosten des Elternknotens + 1
+        newNode = Nodes(self.nextNodeId, parentId, self.heuristicClass, parentNode.gCost, gameBoard)
+        self.nodes[self.nextNodeId] = newNode
+        self.openNodes[self.nextNodeId] = newNode  # Markiere diesen Knoten als offen
+        parentNode.addChild(self.nextNodeId)  # Füge diesen Knoten zu den Kindern des Elternknotens hinzu
         self.nextNodeId += 1
 
     def doesNodeExist(self, gameBoard):
-        # Check if a node with the same gameBoard already exists
+        # Überprüfe, ob ein Knoten mit dem gleichen Spielbrett bereits existiert
         for nodeId, node in self.nodes.items():
             if node.puzzle.compareGameBoards(gameBoard):
                 return True
         return False
 
     def expandNode(self, nodeId):
-        # Expand a node by generating its possible children
+        # Erweitere einen Knoten, indem du seine möglichen Kinder erzeugst
         self.openNodes.pop(nodeId)
         parentNode = self.nodes[nodeId]
-        for gameBoard in parentNode.puzzle.generatePossibleGameBoards():
+        for gameBoard in parentNode.puzzle.generatePossibleMoves():
             if not parentNode.puzzle.compareGameBoards(gameBoard):
                 if not self.doesNodeExist(gameBoard):
                     self.addNode(nodeId, gameBoard)
 
     def getPath(self, nodeId):
-        # Trace back the path from a node to the root
+        # Verfolge den Pfad von einem Knoten bis zum Wurzelknoten
         path = []
         while nodeId is not None:
             path.append(nodeId)
             nodeId = self.nodes[nodeId].parent
         self.numberOfMoves = len(path) - 1
-        return path[::-1]  # Reverse the path
+        return path[::-1]  # Umkehren des Pfades
 
     def printPath(self):
-        # Print the solution path highlighting changes
+        # Gib den Lösungspfad aus, dabei werden die Änderungen hervorgehoben
         previousGameBoard = None
 
         for nodeId in self.path:
@@ -92,30 +94,30 @@ class Queue:
             previousGameBoard = currentGameBoard
 
     def findSolution(self):
-        # Find the solution to the puzzle using heuristic search
+        # Finde die Lösung des Puzzles unter Verwendung des heuristischen Suchalgorithmus
         self.reset()
         self.setFirstNode()
         cheapestNodeId = 0
         run = 0
-        
+
         while True:
             run += 1
             if cheapestNodeId is None:
                 return None
-            if self.nodes[cheapestNodeId].puzzle.reachGoalState():
+            if self.nodes[cheapestNodeId].puzzle.isGoalReached():
                 self.path = self.getPath(cheapestNodeId)
                 return None
             self.expandNode(cheapestNodeId)
             cheapestNodeId = self.findCheapestNode()
 
+"""
             print(
                 f"Current node: {cheapestNodeId}, Cost: {self.nodes[cheapestNodeId].cost}, "
                 f"Parent: {self.nodes[cheapestNodeId].parent}, Run: {run}, "
                 f"Current Cost: {self.nodes[cheapestNodeId].puzzle.getCost()}, "
                 f"Open Nodes: {len(self.openNodes)}"
             )
-
-
+"""
 """
 # A* Algorithm number of nodes expanded
 def a_star(puzzle, heuristic):
