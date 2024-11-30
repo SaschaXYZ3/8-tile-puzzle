@@ -5,11 +5,11 @@ class Nodes:
         """
         Initialize a Node object.
         """
-        self.nodeId = nodeId  # Unique ID for the node
+        self.nodeId = nodeId  # Eindeutige ID für den Knoten
         self.parent = parentId  # Parent node ID
-        self.puzzle = Puzzle(gameBoard)  # Create a Puzzle object with the gameboard
+        self.puzzle = Puzzle(gameBoard)  # Erstellen Sie ein Puzzle-Objekt mit dem Spielbrett
         self.heuristic = heuristic  # Heuristic used for cost calculation
-        self.children = []  # List to store child node IDs
+        self.children = []  # Liste zum Speichern der IDs untergeordneter Knoten
 
         # Calculate the cost using the heuristic function
         self.gCost = parentCost + 1  # Costs from parent node to this node

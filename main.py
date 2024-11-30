@@ -28,24 +28,24 @@ def main():
     else:
         print("Das Ziel wurde noch nicht erreicht.")
 
-        # A*-Algorithmus ausführen, um das Puzzle zu lösen
-        # Wir können hier die Manhattan-Distanz oder die Hamming-Distanz als Heuristik verwenden
-        heuristic = Heuristic.ManhattanDistance(puzzle)  # Wähle die Heuristik (Manhattan oder Hamming)
-        queue = AStarQueue(heuristic)  # Initialisiere die AStarQueue (A*-Algorithmus)
+        # Run A* algorithm to solve the puzzle
+        # We can use the Manhattan distance or the Hamming distance as a heuristic here
+        heuristic = Heuristic.ManhattanDistance(puzzle)  # Select the heuristic (Manhattan or Hamming)
+        queue = AStarQueue(heuristic)  # Initialize the AStarQueue (A* algorithm)
 
-        # Finde die Lösung des Puzzles
+        # Find the solution to the puzzle
         start_time = time.time()
         queue.findSolution()
         end_time = time.time()
 
-        # Ausgabe des Lösungspfads
+        # Output of the solution path
         print("\nLösungspfad:")
         queue.printPath()
 
-        # Zeige die Anzahl der Schritte, die benötigt wurden, um das Puzzle zu lösen
+        # Show the number of steps needed to solve the puzzle
         print(f"Anzahl der Schritte: {queue.numberOfMoves}")
 
-        # Gib die Laufzeit aus
+        # Output the runtime
         print(f"Berechnungszeit: {end_time - start_time} Sekunden")
 
 
