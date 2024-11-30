@@ -53,7 +53,7 @@ KPIs in der Konsole ausgeben.
 
 7. **Kostenberechnung**
    - **`getMisplacedTilesCost`**: Zählt die falsch platzierten Kacheln im Vergleich zum Zielzustand.
-   - **`getManhattanCost`**: Berechnet die Summe der Manhattan-Distanzen aller Kacheln von ihren Zielpositionen.
+   - **`getCost`**: Berechnet die Summe der Manhattan-Distanzen aller Kacheln von ihren Zielpositionen.
 
 8. **Spielfeldoperationen**
    - **`copyGameBoard`**: Erstellt eine Kopie des aktuellen Spielfelds.
@@ -68,15 +68,3 @@ f(n) = g(n) + h(n)
 g(n): Kosten des Pfades vom Startknoten n (Anzahl der Movements)
 h(n): Heuristik (Schätzung der verbleibenden Kosten zum Ziel)
 
- 1. **Offene Liste (`open_list`)**
-   - Alle Knoten gespeichert, die noch nicht expandiert wurden
-   - Priority Queue wählt die Knoten mit dem minimum f(n)-Wert
- 2. **Geschlossene Liste (`closed_list`)**
-   - Verhindert, dass Knoten mehrfach bearbeitet werden, was Speicher und Zeit spart.
-3. **Loop**:
-   - Solange es offene Knoten gibt:
-   - Nimm den besten Knoten f(n)-Wert) aus der offenen Liste. 
-   - Prüfe, ob es der Zielzustand ist. 
-   - Erweitere die Nachbarn und berechne g(n), h(n), und f(n).
-4. **Rückgabe:**
-   - Die Pfadkosten (g(n)), die Anzahl der expandierten Knoten, und der Zielzustand werden zurückgegeben.
