@@ -35,9 +35,9 @@ class Puzzle:
             tile for row in gameBoard for tile in row if tile != 0
         ]
 
+        # count inversion pairs of i and j where i > j
         inversions = 0
 
-        # count inversion pairs of i and j were i > j
         for i in range(len(flat)):
             for j in range(i+1, len(flat)):
                 if flat[i] > flat[j]:

@@ -22,7 +22,7 @@ class ManhattanDistance:
                     targetRow = tile // 3
                     targetCol = tile % 3
 
-                    # add manhatten distance
+                    # sum Manhattan distance
                     cost += abs(rowIndex - targetRow) + abs(colIndex - targetCol)
 
         return cost

@@ -103,12 +103,17 @@ class AStarQueue:
         while True:
             run += 1
             if cheapestNodeId is None:
+                print("No solution found. Exiting.")
                 return None
-            if self.nodes[cheapestNodeId].puzzle.isGoalReached():
+            current_node = self.nodes[cheapestNodeId]
+
+            if current_node.puzzle.isGoalReached():
+                print(f"A solution for the Puzzle was found after {run} iterations.")
                 self.path = self.getPath(cheapestNodeId)
                 return None
             self.expandNode(cheapestNodeId)
             cheapestNodeId = self.findCheapestNode()
+
 
 """
             print(
