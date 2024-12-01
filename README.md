@@ -81,6 +81,92 @@ This project implements a solution to the 8-tile puzzle problem using the A* sea
 
 ---
 
+## Design Decisions
+
+### 1. **Modular Code Structure**
+The project is structured modularly to ensure reusability and readability. Each major functionality is implemented in a separate file:
+- **`Puzzle.py`**: Contains the logic for representing and manipulating the game board.
+- **`AStarQueue.py`**: Implements the A* search algorithm.
+- **`Heuristic.py`**: Implements the heuristic functions (Manhattan and Hamming).
+- **`utils.py`**: Contains utility functions such as board display and solving the puzzle.
+- **`benchmark.py`**: Facilitates performance comparisons of the heuristics.
+- **`testcases.py`**: Includes test cases to verify the functionality.
+
+This structure simplifies future extensions and changes to the project.
+
+---
+
+### 2. **Admissible Heuristics**
+To solve the 8-puzzle problem, two **admissible heuristics** were implemented:
+- **Manhattan Distance**: Calculates the sum of the vertical and horizontal moves required to reach the goal state.
+- **Hamming Distance**: Counts the number of tiles out of place compared to the goal state.
+
+The modular design allows adding new heuristics with minimal changes to the existing codebase.
+
+---
+
+### 3. **A* Search Implementation**
+The A* algorithm was chosen for its optimality and efficiency. The `AStarQueue` class implements:
+- A priority queue using `heapq` to manage open nodes.
+- Node tracking to avoid redundant state expansions.
+- Efficient path tracing from the goal state back to the start.
+
+The implementation ensures correctness while providing flexibility to adapt to other admissible heuristics.
+
+---
+
+### 4. **Random Solvable Puzzle Generation**
+The `Puzzle` class ensures only solvable puzzles are generated using the inversion count method. This avoids wasting computational resources on unsolvable states. 
+
+---
+
+### 5. **Benchmarking and Comparison**
+The `benchmark.py` module was created to compare the performance of different heuristics. Key metrics include:
+- **Average runtime**: Measures the efficiency of each heuristic.
+- **Nodes expanded**: Indicates the search space explored by each heuristic.
+
+This approach provides a quantitative analysis to justify the choice of heuristics.
+
+---
+
+### 6. **Focus on Readability and Maintainability**
+- Descriptive class and function names to improve code readability.
+- Extensive comments and docstrings to explain the purpose of each module, function, and variable.
+- Separation of concerns to avoid tightly coupled components, enabling easier debugging and testing.
+
+---
+
+### 7. **Unit Testing**
+The `testcases.py` file contains unit tests to verify core functionalities like heuristic calculations, puzzle generation, and the A* algorithm. This ensures reliability and correctness across all components.
+
+---
+
+### 8. **Error Handling and Debugging**
+- The `Puzzle` class logs details about the generated boards and their solvability.
+- Debugging statements are included in critical sections, such as node expansion in `AStarQueue`, to trace the algorithm's behavior.
+
+---
+
+### 9. **Interactive User Experience**
+The `main.py` provides:
+- A clear display of the current puzzle.
+- Options for solving the puzzle using a selected heuristic.
+- The ability to compare heuristics interactively with user-defined trial counts.
+
+This ensures a user-friendly interface for both demonstration and testing purposes.
+
+---
+
+### 10. **Efficiency Optimization**
+The implementation minimizes redundant calculations:
+- Node states are stored in a set to avoid duplicate expansions.
+- Heuristic calculations are reused wherever possible.
+- The A* algorithm terminates early when the goal state is found.
+
+This design ensures an optimal balance between performance and readability.
+---
+
+
 ## Class Descriptions
 
 ### `Puzzle`
