@@ -14,40 +14,52 @@ class Puzzle:
         if self.gameBoard is None:
             self.createRandomGameBoard()
 
-
     def createRandomGameBoard(self):
-        """Create a random gameboard that is solvable."""
+        """Create and return a random solvable game board."""
         numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8]
-
         while True:
             random.shuffle(numbers)
-            self.gameBoard = [
-                numbers[i:i + 3] for i in range(0, len(numbers), 3)
-            ]
+            self.gameBoard = [numbers[i:i + 3] for i in range(0, len(numbers), 3)]
+
+            # Debug: Check the flat list and inversion count
+            flat = [tile for row in self.gameBoard for tile in row]
+            print(f"Generated flat board: {flat}")
 
             if self.isSolvable(self.gameBoard):
+                print("Generated solvable board:")
+                for row in self.gameBoard:
+                    print(row)
                 return self.gameBoard
+            else:
+                print("Generated unsolvable board, retrying...")
 
     @staticmethod
     def isSolvable(gameBoard):
-        """Check if the puzzle is solvable based on the number of inversions."""
-        flat = [
-            tile for row in gameBoard for tile in row if tile != 0
-        ]
+        """Check if the puzzle is solvable based on the number of inversions and blank tile position."""
+        flat = [tile for row in gameBoard for tile in row if tile != 0]
 
-        # count inversion pairs of i and j where i > j
-        inversions = 0
+        # Count inversions
+        inversions = sum(
+            1 for i in range(len(flat)) for j in range(i + 1, len(flat)) if flat[i] > flat[j]
+        )
 
-        for i in range(len(flat)):
-            for j in range(i+1, len(flat)):
-                if flat[i] > flat[j]:
-                    inversions += 1
+        # Find the row of the blank tile (0), counted from the bottom (1-indexed)
+        blank_row_from_bottom = 3 - next(
+            i for i, row in enumerate(gameBoard) if 0 in row
+        )
 
-        # puzzle is solvable when inversions are even
-        if inversions % 2 == 0:
-            return True
-        else:
-            return False
+        # Debug: Log inversion count and blank tile position
+        print(f"Inversions: {inversions}, Blank Row (from bottom): {blank_row_from_bottom}")
+
+        # Solvability check
+        is_solvable = (inversions % 2 == 0 and blank_row_from_bottom % 2 == 1) or (
+                inversions % 2 == 1 and blank_row_from_bottom % 2 == 0
+        )
+
+        # Debug: Log solvability result
+        print(f"Board solvable: {is_solvable}")
+
+        return is_solvable
 
     def isGoalReached(self):
         """Check if the current gameboard matches the goal state."""

@@ -68,3 +68,122 @@ f(n) = g(n) + h(n)
 g(n): Kosten des Pfades vom Startknoten n (Anzahl der Movements)
 h(n): Heuristik (Schätzung der verbleibenden Kosten zum Ziel)
 
+___
+
+# Theoretical Explanation of 8-Puzzle Solvability
+
+## 1. Key Solvability Rule
+
+For a **3x3 grid** (8-puzzle), a puzzle is **solvable** if:
+
+1. The **number of inversions** is even **and** the **blank tile is on an odd row (from the bottom, 1-indexed)**.
+2. The **number of inversions** is odd **and** the **blank tile is on an even row (from the bottom, 1-indexed)**.
+
+This rule ensures the puzzle can be solved by swapping tiles while maintaining the necessary parity constraints.
+
+---
+
+## 2. What Is an Inversion?
+
+- An **inversion** occurs when a pair of tiles \((i, j)\) exists such that:
+  - \(i > j\), but \(i\) appears **before** \(j\) in the flattened list of the puzzle.
+  - The blank tile (0) is ignored when counting inversions.
+
+### Example:
+Flattened board: `[1, 8, 2, 0, 4, 5, 3, 7, 6]`
+
+- Ignoring the blank tile, the list is: `[1, 8, 2, 4, 5, 3, 7, 6]`.
+- Count inversions:
+  - \(8 > 2\): 1 inversion.
+  - \(8 > 4\): 1 inversion.
+  - \(8 > 5\): 1 inversion.
+  - \(8 > 3\): 1 inversion.
+  - \(8 > 7\): 1 inversion.
+  - \(8 > 6\): 1 inversion.
+  - \(5 > 3\): 1 inversion.
+  - \(7 > 6\): 1 inversion.
+- Total inversions: \(10\).
+
+---
+
+## 3. Why Does the Blank Tile's Position Matter?
+
+The **blank tile's position** affects solvability due to the way tiles are shifted during the solving process:
+
+- The blank tile acts as a "helper" to facilitate tile swaps.
+- Its row position determines whether the puzzle's inversion parity aligns with a valid solution.
+
+### Parity Impact:
+1. **Odd Row (from bottom)**:
+   - Does not alter inversion parity.
+2. **Even Row (from bottom)**:
+   - Alters inversion parity.
+
+This additional constraint is unique to **odd-sized grids** like 3x3 puzzles.
+
+---
+
+## 4. Why Not Just Inversion Count?
+
+For **even-sized grids** (e.g., 4x4 puzzles):
+- The inversion count alone determines solvability, as the grid size allows for unrestricted parity adjustments.
+
+For **odd-sized grids** (e.g., 3x3 puzzles):
+- The blank tile's position becomes a necessary factor because the grid's size limits the freedom of tile movement, enforcing stricter parity constraints.
+
+---
+
+## 5. Solvability Rule Summary
+
+### A puzzle is solvable if:
+- The **number of inversions** is **even**, and the blank tile is on an **odd row (from the bottom)**.
+- The **number of inversions** is **odd**, and the blank tile is on an **even row (from the bottom)**.
+
+### A puzzle is unsolvable if:
+- The **number of inversions** is **even**, and the blank tile is on an **even row (from the bottom)**.
+- The **number of inversions** is **odd**, and the blank tile is on an **odd row (from the bottom)**.
+
+---
+
+## 6. Examples of Solvability
+
+### Example 1: Solvable
+- Flattened board: `[1, 8, 2, 0, 4, 5, 3, 7, 6]`
+- Inversions: \(10\) (Even)
+- Blank row (from bottom): \(2\) (Odd)
+- **Result**: Solvable.
+
+### Example 2: Unsolvable
+- Flattened board: `[1, 8, 2, 4, 0, 5, 3, 7, 6]`
+- Inversions: \(11\) (Odd)
+- Blank row (from bottom): \(1\) (Odd)
+- **Result**: Unsolvable.
+
+---
+
+## 7. Testing the Rule in Code
+
+### Implementation in Python
+
+```python
+@staticmethod
+def isSolvable(gameBoard):
+    """Check if the puzzle is solvable based on the number of inversions and blank tile position."""
+    flat = [tile for row in gameBoard for tile in row if tile != 0]
+
+    # Count inversions
+    inversions = sum(
+        1 for i in range(len(flat)) for j in range(i + 1, len(flat)) if flat[i] > flat[j]
+    )
+
+    # Find the row of the blank tile (0), counted from the bottom (1-indexed)
+    blank_row_from_bottom = 3 - next(
+        i for i, row in enumerate(gameBoard) if 0 in row
+    )
+
+    # Solvability check
+    is_even_inversions = inversions % 2 == 0
+    is_odd_row = blank_row_from_bottom % 2 == 1
+    is_solvable = (is_even_inversions and is_odd_row) or (not is_even_inversions and not is_odd_row)
+
+    return is_solvable

@@ -157,12 +157,19 @@ def compare_heuristics(num_trials):
     hamming_results = {"time": 0, "expanded_nodes": 0}
 
     for trial in range(num_trials):
-        print(f"Trial {trial + 1} of {num_trials}...")  # Progress indicator
-        puzzle = Puzzle()  # Generate a random solvable puzzle
+        print(f"--- Trial {trial + 1} of {num_trials} ---")  # Mark start of each trial
+        retries = 0
 
-        # Print the generated game board
-        print("Generated Puzzle for comparison:")
-        puzzle.printGameBoard()
+        while True:  # Keep generating puzzles until a solvable one is found
+            retries += 1
+            puzzle = Puzzle()
+
+            if puzzle.isSolvable(puzzle.gameBoard):
+                print(f"Generated a solvable board after {retries} retries:")
+                puzzle.printGameBoard()
+                break  # Exit loop if solvable
+
+            print("Generated unsolvable board, retrying...")
 
         # Run comparison for each heuristic
         for heuristic_name, heuristic_class, results in [
@@ -187,7 +194,6 @@ def compare_heuristics(num_trials):
           f"Avg Expanded Nodes: {manhattan_results['expanded_nodes'] / num_trials}")
     print(f"Hamming: Avg Time: {hamming_results['time'] / num_trials:.4f}s, "
           f"Avg Expanded Nodes: {hamming_results['expanded_nodes'] / num_trials}")
-
 
 if __name__ == "__main__":
     main()
