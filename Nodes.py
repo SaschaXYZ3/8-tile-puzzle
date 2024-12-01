@@ -24,13 +24,9 @@ class Nodes:
         self.cost = self.gCost + self.hCost  # Total cost (f = g + h)
 
     def addChild(self, childId):
-        """
-        Add a child node ID to the list of children.
-        """
+        """ Add a child node ID to the list of children."""
         self.children.append(childId)
 
     def __repr__(self):
-        """
-        String-Darstellung für Debugging-Zwecke.
-        """
+        """ String visualization for Debugging purpose. """
         return f"Node {self.nodeId} (g: {self.gCost}, h: {self.hCost}, f: {self.cost})"

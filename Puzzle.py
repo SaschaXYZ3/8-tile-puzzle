@@ -1,6 +1,5 @@
 import random
 
-
 class Puzzle:
 
     # define goalstate
@@ -78,10 +77,10 @@ class Puzzle:
 
         # possible movements
         moves = [
-            (-1, 0),   # hoch
-            (1, 0),   # runter
-            (0, -1),   # links
-            (0, 1)    # rechts
+            (-1, 0),   # up
+            (1, 0),   # down
+            (0, -1),   # left
+            (0, 1)    # right
         ]
 
         for moveRow, moveCol in moves:
@@ -101,7 +100,7 @@ class Puzzle:
         return neighbors
 
     def compareGameBoards(self, otherGameBoard):
-        """Vergleiche das aktuelle Gameboard mit einem anderen."""
+        """Compare actual gameboard with other one"""
         return self.gameBoard == otherGameBoard
 
     def printGameBoard(self):
@@ -110,9 +109,7 @@ class Puzzle:
             print(row)
 
     def getCost(self):
-        """Berechne die Gesamtkosten des aktuellen Zustands.
-        Hier wird die Manhattan-Distanz verwendet.
-        """
+        """Calculate costs of actual state with Manhatten distance"""
         cost = 0
         for i in range(3):
             for j in range(3):
@@ -124,27 +121,3 @@ class Puzzle:
                     # Calculate Manhattan distance
                     cost += abs(i - targetRow) + abs(j - targetCol)
         return cost
-
-
-"""    def getMisplacedTilesCost(self):
-        Calculate the cost based on the number of misplaced tiles.
-        cost = 0
-        for i in range(3):
-            for j in range(3):
-                if self.gameBoard[i][j] != 0 and self.gameBoard[i][j] != Puzzle.goalState[i][j]:
-                    cost += 1
-        return cost
-
-    def getManhattanCost(self):
-        Calculate the cost based on the Manhattan distance.
-        cost = 0
-        for i in range(3):
-            for j in range(3):
-                tile = self.gameBoard[i][j]
-                if tile != 0:
-                    # Find the correct position of the tile in the goal state
-                    targetRow = tile // 3
-                    targetCol = tile % 3
-                    # Calculate the Manhattan distance
-                    cost += abs(i - targetRow) + abs(j - targetCol)
-        return cost"""
