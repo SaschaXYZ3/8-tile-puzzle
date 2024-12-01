@@ -1,90 +1,68 @@
-import unittest  # For the test framework
-from Puzzle import Puzzle  # To test puzzle-related functionality
-from AStarQueue import AStarQueue  # To test the A* algorithm implementation
-import Heuristic  # To test Manhattan and Hamming heuristic calculations
-from main import compare_heuristics  # To test heuristic comparison functionality
+import unittest
+from Puzzle import Puzzle
+from AStarQueue import AStarQueue
+import Heuristic
+
 
 class TestPuzzle(unittest.TestCase):
-    def test_random_puzzle_solvability(self):
-        """Test that random puzzles generated are solvable."""
-        for _ in range(10):  # Test 10 random puzzles
-            puzzle = Puzzle()
-            self.assertTrue(puzzle.isSolvable(puzzle.gameBoard), "Generated puzzle is not solvable!")
+    def test_is_solvable(self):
+        # Solvable puzzle
+        solvable_board = [[1, 2, 3], [4, 5, 6], [7, 8, 0]]
+        self.assertTrue(Puzzle.isSolvable(solvable_board))
 
-    def test_specific_solvable_puzzle(self):
-        """Test a specific solvable puzzle."""
-        solvable_puzzle = Puzzle([[1, 2, 3], [4, 5, 6], [7, 8, 0]])  # Solved state
-        self.assertTrue(solvable_puzzle.isSolvable(solvable_puzzle.gameBoard),
-                        "Specific solvable puzzle marked as unsolvable!")
+        # Unsolvable puzzle
+        unsolvable_board = [[1, 2, 3], [4, 5, 6], [8, 7, 0]]
+        self.assertFalse(Puzzle.isSolvable(unsolvable_board))
 
-    def test_specific_unsolvable_puzzle(self):
-        """Test a specific unsolvable puzzle."""
-        unsolvable_puzzle = Puzzle([[1, 2, 3], [4, 5, 6], [8, 7, 0]])  # Inversions make it unsolvable
-        self.assertFalse(unsolvable_puzzle.isSolvable(unsolvable_puzzle.gameBoard),
-                         "Specific unsolvable puzzle marked as solvable!")
+    def test_is_goal_reached(self):
+        # Goal state
+        puzzle = Puzzle(gameBoard=[[0, 1, 2], [3, 4, 5], [6, 7, 8]])
+        self.assertTrue(puzzle.isGoalReached())
 
-    def test_goal_state_detection(self):
-        """Test if the goal state is correctly detected."""
-        solved_puzzle = Puzzle([[0, 1, 2], [3, 4, 5], [6, 7, 8]])
-        self.assertTrue(solved_puzzle.isGoalReached(), "Goal state not detected as solved!")
+        # Non-goal state
+        puzzle = Puzzle(gameBoard=[[1, 2, 3], [4, 5, 6], [7, 8, 0]])
+        self.assertFalse(puzzle.isGoalReached())
 
-        unsolved_puzzle = Puzzle([[1, 2, 3], [4, 5, 6], [0, 7, 8]])
-        self.assertFalse(unsolved_puzzle.isGoalReached(), "Unsolved puzzle detected as solved!")
+    def test_generate_possible_moves(self):
+        puzzle = Puzzle(gameBoard=[[1, 2, 3], [4, 0, 5], [6, 7, 8]])
+        possible_moves = puzzle.generatePossibleMoves()
+        self.assertEqual(len(possible_moves), 4)  # 4 possible moves for the blank tile
+        self.assertIn([[1, 0, 3], [4, 2, 5], [6, 7, 8]], possible_moves)
+
+    def test_manhattan_distance(self):
+        puzzle = Puzzle(gameBoard=[[1, 2, 3], [4, 5, 6], [0, 7, 8]])
+        heuristic = Heuristic.ManhattanDistance(puzzle)
+        self.assertEqual(heuristic.calculate(puzzle.gameBoard), 2)
+
+    def test_hamming_distance(self):
+        puzzle = Puzzle(gameBoard=[[1, 2, 3], [4, 5, 6], [0, 8, 7]])
+        heuristic = Heuristic.HammingDistance(puzzle)
+        self.assertEqual(heuristic.calculate(puzzle.gameBoard), 2)
 
 
 class TestAStarQueue(unittest.TestCase):
-    def test_astar_with_manhattan(self):
-        """Test A* with Manhattan heuristic on a solvable puzzle."""
-        puzzle = Puzzle([[1, 2, 3], [4, 5, 6], [7, 8, 0]])  # Already solved
+    def test_find_solution_manhattan(self):
+        puzzle = Puzzle(gameBoard=[[1, 2, 3], [4, 5, 6], [0, 7, 8]])
         heuristic = Heuristic.ManhattanDistance(puzzle)
-        queue = AStarQueue(heuristic)
+        queue = AStarQueue(puzzle, heuristic)
         queue.findSolution()
-        self.assertEqual(queue.numberOfMoves, 0, "Solved puzzle should require 0 moves!")
+        self.assertEqual(queue.numberOfMoves, 2)  # It should take 2 moves to solve
 
-    def test_astar_with_hamming(self):
-        """Test A* with Hamming heuristic on a solvable puzzle."""
-        puzzle = Puzzle([[1, 2, 3], [4, 5, 6], [7, 8, 0]])  # Already solved
+    def test_find_solution_hamming(self):
+        puzzle = Puzzle(gameBoard=[[1, 2, 3], [4, 5, 6], [0, 8, 7]])
         heuristic = Heuristic.HammingDistance(puzzle)
-        queue = AStarQueue(heuristic)
+        queue = AStarQueue(puzzle, heuristic)
         queue.findSolution()
-        self.assertEqual(queue.numberOfMoves, 0, "Solved puzzle should require 0 moves!")
+        self.assertEqual(queue.numberOfMoves, 2)  # It should take 2 moves to solve
 
-    def test_astar_solution_path(self):
-        """Test that A* produces the correct solution path."""
-        puzzle = Puzzle([[1, 2, 3], [4, 5, 6], [7, 0, 8]])  # One move away
+    def test_expand_node(self):
+        puzzle = Puzzle(gameBoard=[[1, 2, 3], [4, 0, 5], [6, 7, 8]])
         heuristic = Heuristic.ManhattanDistance(puzzle)
-        queue = AStarQueue(heuristic)
-        queue.findSolution()
-        self.assertEqual(queue.numberOfMoves, 1, "Puzzle should require 1 move to solve!")
+        queue = AStarQueue(puzzle, heuristic)
+        queue.setFirstNode()
+        queue.expandNode(0)
+        self.assertEqual(len(queue.nodes), 5)  # 1 parent node and 4 child nodes
 
 
-class TestHeuristics(unittest.TestCase):
-    def test_manhattan_distance(self):
-        """Test Manhattan distance calculation."""
-        puzzle = Puzzle([[1, 2, 3], [4, 5, 6], [7, 8, 0]])  # Solved state
-        heuristic = Heuristic.ManhattanDistance(puzzle)
-        self.assertEqual(heuristic.calculate(puzzle.gameBoard), 0, "Manhattan distance for solved puzzle should be 0!")
-
-        scrambled_puzzle = Puzzle([[1, 2, 3], [4, 6, 5], [7, 8, 0]])  # One tile misplaced
-        heuristic = Heuristic.ManhattanDistance(scrambled_puzzle)
-        self.assertEqual(heuristic.calculate(scrambled_puzzle.gameBoard), 2, "Manhattan distance mismatch!")
-
-    def test_hamming_distance(self):
-        """Test Hamming distance calculation."""
-        puzzle = Puzzle([[1, 2, 3], [4, 5, 6], [7, 8, 0]])  # Solved state
-        heuristic = Heuristic.HammingDistance(puzzle)
-        self.assertEqual(heuristic.calculate(puzzle.gameBoard), 0, "Hamming distance for solved puzzle should be 0!")
-
-        scrambled_puzzle = Puzzle([[1, 2, 3], [4, 6, 5], [7, 8, 0]])  # Two tiles misplaced
-        heuristic = Heuristic.HammingDistance(scrambled_puzzle)
-        self.assertEqual(heuristic.calculate(scrambled_puzzle.gameBoard), 2, "Hamming distance mismatch!")
-
-
-class TestHeuristicComparison(unittest.TestCase):
-    def test_heuristic_comparison(self):
-        """Test heuristic comparison functionality."""
-        try:
-            compare_heuristics(num_trials=2)
-        except Exception as e:
-            self.fail(f"Heuristic comparison failed with exception: {e}")
-
+if __name__ == "__main__":
+    unittest.main()

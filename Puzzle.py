@@ -20,22 +20,25 @@ class Puzzle:
         while True:
             random.shuffle(numbers)
             self.gameBoard = [numbers[i:i + 3] for i in range(0, len(numbers), 3)]
+            if self.isSolvable(self.gameBoard):
+                return self.gameBoard
 
             # Debug: Check the flat list and inversion count
-            flat = [tile for row in self.gameBoard for tile in row]
-            print(f"Generated flat board: {flat}")
-
-            if self.isSolvable(self.gameBoard):
-                print("Generated solvable board:")
-                for row in self.gameBoard:
-                    print(row)
-                return self.gameBoard
-            else:
-                print("Generated unsolvable board, retrying...")
+            #flat = [tile for row in self.gameBoard for tile in row]
+            #print(f"Generated flat board: {flat}")
 
     @staticmethod
     def isSolvable(gameBoard):
-        """Check if the puzzle is solvable based on the number of inversions and blank tile position."""
+        """
+        Check if a given puzzle board is solvable based solely on the inversion count.
+
+        Args:
+            gameBoard (list of list of int): The 3x3 puzzle board.
+
+        Returns:
+            bool: True if solvable, False otherwise.
+        """
+        # Flatten the board and remove the blank tile (0)
         flat = [tile for row in gameBoard for tile in row if tile != 0]
 
         # Count inversions
@@ -43,23 +46,8 @@ class Puzzle:
             1 for i in range(len(flat)) for j in range(i + 1, len(flat)) if flat[i] > flat[j]
         )
 
-        # Find the row of the blank tile (0), counted from the bottom (1-indexed)
-        blank_row_from_bottom = 3 - next(
-            i for i, row in enumerate(gameBoard) if 0 in row
-        )
-
-        # Debug: Log inversion count and blank tile position
-        print(f"Inversions: {inversions}, Blank Row (from bottom): {blank_row_from_bottom}")
-
-        # Solvability check
-        is_solvable = (inversions % 2 == 0 and blank_row_from_bottom % 2 == 1) or (
-                inversions % 2 == 1 and blank_row_from_bottom % 2 == 0
-        )
-
-        # Debug: Log solvability result
-        print(f"Board solvable: {is_solvable}")
-
-        return is_solvable
+        # Solvable if the inversion count is even
+        return inversions % 2 == 0
 
     def isGoalReached(self):
         """Check if the current gameboard matches the goal state."""

@@ -1,17 +1,26 @@
 from Nodes import Nodes
 import heapq
+from Puzzle import Puzzle
 
 # Rename the class to AStarQueue to avoid conflicts
 class AStarQueue:
 
-    def __init__(self, heuristicClass):
-        self.nodes = {}  # Dictionary for saving nodes according to their ID
-        self.nextNodeId = 0  # ID for the next node
-        self.openNodes = []  # Priority queue for open nodes (heapq)
-        self.path = []  # The solution path as a list of node IDs
-        self.numberOfMoves = 0  # Number of steps to solve the puzzle
-        self.heuristicClass = heuristicClass  # Heuristics for the puzzle
-        self.nodeStates = set()  # Set to store unique game board states
+    def __init__(self, puzzle: 'Puzzle', heuristicClass):
+        """
+        Initialize the A* queue with the initial puzzle state.
+
+        Args:
+            puzzle (Puzzle): The initial puzzle object.
+            heuristicClass (object): The heuristic class for cost calculations.
+        """
+        self.puzzle = puzzle  # Store the initial puzzle
+        self.heuristicClass = heuristicClass  # Store the heuristic instance
+        self.nodes = {}
+        self.nextNodeId = 0
+        self.openNodes = []
+        self.path = []
+        self.numberOfMoves = 0
+        self.nodeStates = set()
 
     def reset(self):
         # Reset the queue to its initial state
@@ -21,13 +30,22 @@ class AStarQueue:
         self.path = []
 
     def setFirstNode(self):
-        firstNode = Nodes(self.nextNodeId, None, self.heuristicClass, 0)
+        """
+        Set the initial node in the A* queue based on the puzzle passed during initialization.
+        """
+        # Ensure the puzzle's board is passed correctly
+        initial_board = self.puzzle.gameBoard
+
+        # Create the first node
+        firstNode = Nodes(self.nextNodeId, None, self.heuristicClass, 0, initial_board)
         self.nodes[self.nextNodeId] = firstNode
 
-        # Debugging check
-        if not isinstance(self.openNodes, list):
-            raise TypeError("openNodes must be a list for heapq operations.")
+        # Debug: Log the first node
+        print(f"SetFirstNode - Node ID: {self.nextNodeId}, Initial Board:")
+        for row in initial_board:
+            print(row)
 
+        # Push the first node into the priority queue
         heapq.heappush(self.openNodes, (firstNode.cost, self.nextNodeId))
         self.nextNodeId += 1
 
@@ -91,7 +109,7 @@ class AStarQueue:
 
             previousGameBoard = currentGameBoard
 
-    def findSolution(self, max_iterations=20000, max_nodes=25000):
+    def findSolution(self, max_iterations=15000, max_nodes=25000):
         """
         Find the solution to the puzzle using the heuristic search algorithm.
 
@@ -106,11 +124,14 @@ class AStarQueue:
         self.setFirstNode()
         run = 0
         total_expanded_nodes = 0
-        max_iterations_count = 0
-        max_expansion_count = 0
 
         while self.openNodes:
             run += 1
+
+            # Check for iteration termination
+            if run > max_iterations:
+                print(f"Terminated: Exceeded maximum iterations ({max_iterations}).")
+                return None
 
             # Get the cheapest node
             cheapestNodeId = self.findCheapestNode()
@@ -126,23 +147,27 @@ class AStarQueue:
                 self.path = self.getPath(cheapestNodeId)
                 return  # Exit the loop and method
 
-            # Termination condition: check iteration limit
-            if run > max_iterations:
-                max_iterations_count += 1
-                print(f"Terminated: Maximum iterations ({max_iterations}) reached. Violating iterations count: {max_iterations_count}")
-                return None
-
             # Expand the current node
             self.expandNode(cheapestNodeId)
             total_expanded_nodes += 1
 
+            # Termination condition: check iteration limit
+            if run > max_iterations:
+                print(f"Terminated: Maximum iterations ({max_iterations}) reached.")
+                return None
+
+
+
             # Termination condition: check expanded nodes limit
             if total_expanded_nodes > max_nodes:
-                max_expansion_count += 1
-                print(f"Terminated: Maximum expanded nodes ({max_nodes}) reached. Violating Nodes count: {max_expansion_count}")
+                print(f"Terminated: Maximum expanded nodes ({max_nodes}) reached.")
                 return None
 
             # Optional debugging output
             #if run % 100 == 0:  # Print every 100 iterations
             #    print(f"Iteration: {run}, Open Nodes: {len(self.openNodes)}, "
             #          f"Expanded Nodes: {total_expanded_nodes}")
+
+        # If no nodes are left to process, the puzzle is unsolvable
+        print("No solution found. OpenNodes is empty.")
+        return None

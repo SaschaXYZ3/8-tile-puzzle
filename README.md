@@ -7,83 +7,222 @@
         0 soll links oben stehen
 - [x] **3. Check, ob diese Random-Zahlen überhaupt lösbar sind:**
   - [x] Berechnung der Inversions.
-- [ ] **4. Manhattan- und Hamming-Distanz als Heuristik für den A*-Algorithmus:**
-  - [ ] Generieren von Successors (Liste mit allen möglichen Moves).
-  - [ ] Kostenberechnung mit Manhattan- oder Hamming-Distanz.
-  - [ ] Hinzufügen der Successors in eine Queue mit `heapq`.
-  - [ ] Abfragen der Queue.
-  - [ ] Pfadberechnung (optimaler Pfad finden).
-  - [ ] Umsetzen des Pfades auf das Spielfeld.
-- [ ] **5. Statistik:** Wie viele Nodes wurden benötigt, wie ist die Laufzeit etc.?
-- [ ] **6. User Interface (z. B. Command Line):**
+- [x] **4. Manhattan- und Hamming-Distanz als Heuristik für den A*-Algorithmus:**
+  - [x] Generieren von Successors (Liste mit allen möglichen Moves).
+  - [x] Kostenberechnung mit Manhattan- oder Hamming-Distanz.
+  - [x] Hinzufügen der Successors in eine Queue mit `heapq`.
+  - [x] Abfragen der Queue.
+  - [x] Pfadberechnung (optimaler Pfad finden).
+  - [x] Umsetzen des Pfades auf das Spielfeld.
+- [x] **5. Statistik:** Wie viele Nodes wurden benötigt, wie ist die Laufzeit etc.?
+- [x] **6. User Interface (z. B. Command Line):**
 
 ---
 
-## Anwendung von Mathe
-KPIs in der Konsole ausgeben.
 
+## Overview
+This project implements a solution to the 8-tile puzzle problem using the A* search algorithm. The implementation includes two heuristic functions (Hamming and Manhattan distances) to evaluate the puzzle's state during the search. The code is modular, allowing for comparisons of different heuristics and extensibility for future enhancements.
 
-### Klasse Puzzle.py
+---
 
-1. **Zielzustand (`goalState`)**
-   - Definiert die Zielkonfiguration des Spielfelds:
-     ```
-     [[0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8]]
-     ```
-   - Das leere Feld (0) befindet sich oben links.
+## File Descriptions
 
-2. **Initialisierung (`__init__`)**
-   - Erstellt ein Puzzle-Objekt mit einem vorgegebenen oder zufällig generierten Spielfeld.
-   - Wenn kein Spielfeld angegeben wird, wird ein zufälliges, lösbares Spielfeld erzeugt.
+### `main.py`
+- **Purpose**: Entry point of the program.
+- **Key Functions**:
+  - Initializes the puzzle and displays its current state.
+  - Solves the puzzle using the A* algorithm.
+  - Allows the user to compare the performance of Manhattan and Hamming heuristics.
+- **How to Run**: Execute this file to start the program. It interacts with the user via command-line input.
 
-3. **Zufällige Spielfeldgenerierung (`createRandomGameBoard`)**
-   - Generiert eine zufällige und lösbare Konfiguration des Spielfelds.
-   - Nutzt die `isSolvable`-Methode, um sicherzustellen, dass das Spielfeld lösbar ist.
+### `Puzzle.py`
+- **Purpose**: Defines the `Puzzle` class for managing the puzzle game board.
+- **Key Features**:
+  - Generate solvable puzzles.
+  - Compute valid moves for the blank tile.
+  - Check if the current state matches the goal state.
+  - Utility methods like copying the board and calculating Manhattan distance.
 
-4. **Spielfeldanzeige (`printGameBoard`)**
-   - Gibt das aktuelle Spielfeld in lesbarer Form auf der Konsole aus.
+### `AStarQueue.py`
+- **Purpose**: Implements the A* search algorithm for solving the puzzle.
+- **Key Features**:
+  - Manages open and closed nodes.
+  - Calculates costs based on the chosen heuristic.
+  - Traces and prints the solution path.
 
-5. **Lösbarkeit prüfen (`isSolvable`)**
-   - Überprüft, ob die aktuelle Spielfeldkonfiguration lösbar ist, basierend auf der Anzahl von Inversionen.
+### `Nodes.py`
+- **Purpose**: Defines the `Nodes` class, representing each node in the search tree.
+- **Key Features**:
+  - Stores the current board state, parent node, and heuristic costs (`gCost`, `hCost`, and `fCost`).
+  - Includes methods for managing child nodes.
 
-6. **Zielzustand prüfen (`isGoalReached`)**
-   - Vergleicht das aktuelle Spielfeld mit dem Zielzustand und gibt zurück, ob dieser erreicht wurde.
+### `Heuristic.py`
+- **Purpose**: Implements heuristic functions for evaluating puzzle states.
+- **Key Heuristics**:
+  - **Hamming Distance**: Counts the number of misplaced tiles.
+  - **Manhattan Distance**: Calculates the sum of distances of tiles from their target positions.
 
-7. **Kostenberechnung**
-   - **`getMisplacedTilesCost`**: Zählt die falsch platzierten Kacheln im Vergleich zum Zielzustand.
-   - **`getCost`**: Berechnet die Summe der Manhattan-Distanzen aller Kacheln von ihren Zielpositionen.
+### `utils.py`
+- **Purpose**: Contains utility functions for displaying the board and solving puzzles.
+- **Key Features**:
+  - `display_board`: Displays the puzzle state in a readable format.
+  - `solve_puzzle`: Solves the puzzle using a given heuristic.
 
-8. **Spielfeldoperationen**
-   - **`copyGameBoard`**: Erstellt eine Kopie des aktuellen Spielfelds.
-   - **`getEmptyPosition`**: Findet die Position des leeren Felds (0).
-   - **`generatePossibleMoves`**: Generiert alle möglichen Spielfeldkonfigurationen, die durch Verschieben des leeren Felds entstehen können.
+### `benchmark.py`
+- **Purpose**: Contains functionality to compare the performance of heuristics.
+- **Key Features**:
+  - Runs the A* algorithm multiple times on randomly generated puzzles.
+  - Calculates and displays average time and expanded nodes for each heuristic.
 
+### `testcases.py`
+- **Purpose**: Provides predefined test cases for validating the solver.
+- **Key Features**:
+  - Contains edge cases, solvable puzzles, and unsolvable puzzles for testing.
 
+---
 
-**A_star-Algorithmus Implementierung:**
---> Prioritätswarteschlange wird verwendet, um effizient den besten Knoten zu finden
-f(n) = g(n) + h(n)
-g(n): Kosten des Pfades vom Startknoten n (Anzahl der Movements)
-h(n): Heuristik (Schätzung der verbleibenden Kosten zum Ziel)
+## Class Descriptions
 
+### `Puzzle`
+- **Attributes**:
+  - `goalState`: The goal configuration of the puzzle.
+  - `gameBoard`: The current state of the puzzle board.
+- **Methods**:
+  - `createRandomGameBoard`: Generates a random solvable puzzle.
+  - `isSolvable`: Checks if a puzzle configuration is solvable based on inversion count.
+  - `isGoalReached`: Verifies if the current state matches the goal state.
+  - `generatePossibleMoves`: Generates all possible moves for the blank tile.
+
+### `AStarQueue`
+- **Attributes**:
+  - `puzzle`: The initial puzzle state.
+  - `heuristicClass`: The heuristic function used to evaluate states.
+  - `nodes`: A dictionary to store nodes by their IDs.
+  - `openNodes`: Priority queue for open nodes.
+- **Methods**:
+  - `setFirstNode`: Initializes the first node in the search tree.
+  - `findSolution`: Runs the A* algorithm to find a solution.
+  - `expandNode`: Expands a node to generate its children.
+  - `getPath`: Traces the path from a node to the root.
+
+### `Nodes`
+- **Attributes**:
+  - `nodeId`: Unique identifier for the node.
+  - `parent`: Parent node ID.
+  - `puzzle`: Current puzzle state.
+  - `gCost`, `hCost`, `cost`: Cost attributes for A*.
+- **Methods**:
+  - `addChild`: Links a child node to the parent.
+
+### `Heuristic`
+- **HammingDistance**:
+  - Counts tiles that are not in their goal positions.
+- **ManhattanDistance**:
+  - Calculates the sum of distances of tiles from their goal positions.
+
+---
+
+## Theoretical Explanation of Heuristics
+
+### **Hamming Distance**
+- **Definition**: Counts the number of misplaced tiles (excluding the blank tile).
+- **Purpose**: Provides a simplistic heuristic to estimate the number of moves required to solve the puzzle.
+- **Formula**: 
+  \[
+  H = \sum_{i=1}^{n} \text{misplaced}(i)
+  \]
+  where `misplaced(i)` is 1 if tile \(i\) is not in its target position, otherwise 0.
+
+### **Manhattan Distance**
+- **Definition**: Calculates the total number of moves required for each tile to reach its goal position if it could move independently.
+- **Purpose**: More precise than Hamming, considering the actual distances of tiles.
+- **Formula**:
+  \[
+  M = \sum_{i=1}^{n} \left( |x_i - x_{\text{goal}}| + |y_i - y_{\text{goal}}| \right)
+  \]
+  where \((x_i, y_i)\) is the current position of tile \(i\), and \((x_{\text{goal}}, y_{\text{goal}})\) is its target position.
+
+---
+
+## Performance Analysis
+
+### **Average and Mean Calculations**
+- **Average Time**: Sum of all runtimes divided by the number of trials.
+- **Mean Nodes Expanded**: Sum of expanded nodes across all trials divided by the number of trials.
+
+### **Formula**:
+- Average Time:
+  \[
+  \text{Avg Time} = \frac{\sum_{i=1}^n \text{Time}_i}{n}
+  \]
+- Average Nodes:
+  \[
+  \text{Avg Nodes} = \frac{\sum_{i=1}^n \text{Nodes}_i}{n}
+  \]
+
+---
+
+## Class Diagram
+
+```plaintext
+@startuml
+class Puzzle {
+  - goalState: List[List[int]]
+  - gameBoard: List[List[int]]
+  + createRandomGameBoard()
+  + isSolvable(gameBoard): bool
+  + isGoalReached(): bool
+  + generatePossibleMoves(): List[List[List[int]]]
+  + printGameBoard(): void
+}
+
+class AStarQueue {
+  - puzzle: Puzzle
+  - heuristicClass: Heuristic
+  - nodes: Dict[int, Nodes]
+  - openNodes: List[Nodes]
+  + setFirstNode(): void
+  + findSolution(): void
+  + expandNode(nodeId: int): void
+  + getPath(nodeId: int): List[int]
+}
+
+class Nodes {
+  - nodeId: int
+  - parent: int
+  - puzzle: Puzzle
+  - gCost: int
+  - hCost: int
+  - cost: int
+  + addChild(childId: int): void
+}
+
+class Heuristic {
+  + calculate(gameBoard: List[List[int]]): int
+}
+
+class HammingDistance {
+  + calculate(gameBoard: List[List[int]]): int
+}
+
+class ManhattanDistance {
+  + calculate(gameBoard: List[List[int]]): int
+}
+
+Puzzle "1" --> "1" AStarQueue
+AStarQueue "1" --> "*" Nodes
+AStarQueue "1" --> "1" Heuristic
+Heuristic <|-- HammingDistance
+Heuristic <|-- ManhattanDistance
+@enduml
+```
 ___
 
 # Theoretical Explanation of 8-Puzzle Solvability
 
-## 1. Key Solvability Rule
 
-For a **3x3 grid** (8-puzzle), a puzzle is **solvable** if:
 
-1. The **number of inversions** is even **and** the **blank tile is on an odd row (from the bottom, 1-indexed)**.
-2. The **number of inversions** is odd **and** the **blank tile is on an even row (from the bottom, 1-indexed)**.
-
-This rule ensures the puzzle can be solved by swapping tiles while maintaining the necessary parity constraints.
-
----
-
-## 2. What Is an Inversion?
+## 1. What Is an Inversion?
 
 - An **inversion** occurs when a pair of tiles \((i, j)\) exists such that:
   - \(i > j\), but \(i\) appears **before** \(j\) in the flattened list of the puzzle.
@@ -106,84 +245,3 @@ Flattened board: `[1, 8, 2, 0, 4, 5, 3, 7, 6]`
 
 ---
 
-## 3. Why Does the Blank Tile's Position Matter?
-
-The **blank tile's position** affects solvability due to the way tiles are shifted during the solving process:
-
-- The blank tile acts as a "helper" to facilitate tile swaps.
-- Its row position determines whether the puzzle's inversion parity aligns with a valid solution.
-
-### Parity Impact:
-1. **Odd Row (from bottom)**:
-   - Does not alter inversion parity.
-2. **Even Row (from bottom)**:
-   - Alters inversion parity.
-
-This additional constraint is unique to **odd-sized grids** like 3x3 puzzles.
-
----
-
-## 4. Why Not Just Inversion Count?
-
-For **even-sized grids** (e.g., 4x4 puzzles):
-- The inversion count alone determines solvability, as the grid size allows for unrestricted parity adjustments.
-
-For **odd-sized grids** (e.g., 3x3 puzzles):
-- The blank tile's position becomes a necessary factor because the grid's size limits the freedom of tile movement, enforcing stricter parity constraints.
-
----
-
-## 5. Solvability Rule Summary
-
-### A puzzle is solvable if:
-- The **number of inversions** is **even**, and the blank tile is on an **odd row (from the bottom)**.
-- The **number of inversions** is **odd**, and the blank tile is on an **even row (from the bottom)**.
-
-### A puzzle is unsolvable if:
-- The **number of inversions** is **even**, and the blank tile is on an **even row (from the bottom)**.
-- The **number of inversions** is **odd**, and the blank tile is on an **odd row (from the bottom)**.
-
----
-
-## 6. Examples of Solvability
-
-### Example 1: Solvable
-- Flattened board: `[1, 8, 2, 0, 4, 5, 3, 7, 6]`
-- Inversions: \(10\) (Even)
-- Blank row (from bottom): \(2\) (Odd)
-- **Result**: Solvable.
-
-### Example 2: Unsolvable
-- Flattened board: `[1, 8, 2, 4, 0, 5, 3, 7, 6]`
-- Inversions: \(11\) (Odd)
-- Blank row (from bottom): \(1\) (Odd)
-- **Result**: Unsolvable.
-
----
-
-## 7. Testing the Rule in Code
-
-### Implementation in Python
-
-```python
-@staticmethod
-def isSolvable(gameBoard):
-    """Check if the puzzle is solvable based on the number of inversions and blank tile position."""
-    flat = [tile for row in gameBoard for tile in row if tile != 0]
-
-    # Count inversions
-    inversions = sum(
-        1 for i in range(len(flat)) for j in range(i + 1, len(flat)) if flat[i] > flat[j]
-    )
-
-    # Find the row of the blank tile (0), counted from the bottom (1-indexed)
-    blank_row_from_bottom = 3 - next(
-        i for i, row in enumerate(gameBoard) if 0 in row
-    )
-
-    # Solvability check
-    is_even_inversions = inversions % 2 == 0
-    is_odd_row = blank_row_from_bottom % 2 == 1
-    is_solvable = (is_even_inversions and is_odd_row) or (not is_even_inversions and not is_odd_row)
-
-    return is_solvable
